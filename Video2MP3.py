@@ -9,6 +9,7 @@
 import os
 try:
     import moviepy.editor as mpe
+    from threading import Thread
     from PyQt5 import QtCore, QtGui, QtWidgets
     from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
     from PyQt5.QtGui import QIcon
@@ -68,7 +69,8 @@ class Ui_MainWindow2(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
         self.open.clicked.connect(self.add_file)
-        self.convert.clicked.connect(self.convert_mp3)
+        # self.convert.clicked.connect(self.convert_mp3)
+        self.convert.clicked.connect(lambda:Thread(target=self.convert_mp3).start())
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -77,23 +79,37 @@ class Ui_MainWindow2(object):
         self.open.setText(_translate("MainWindow", "Add"))
         self.convert.setText(_translate("MainWindow", "Convert"))
 
-    List=[]    
+    # List=[]    
 
     def add_file(self):
-        filename = QFileDialog.getOpenFileName()
-        global path
-        path = filename[0]
-        print(path)
-        self.List.append(path)
-        print(self.List)
-        self.listWidget.addItem(path)
+        filename = QFileDialog.getOpenFileNames()
+        # global path
+        # path = filename[0]
+        global Listz
+        Listz=filename[0]
+        # print(path)
+        # self.List.append(path)
+        print(Listz)
+        global count
+        count=1
+        for itemz in Listz:
+            self.listWidget.addItem(str(count)+")"+str(itemz))
+            count+=1
     
     def convert_mp3(self):
-        for i in self.List:
+        self.convert.setText("Converting...")
+        self.convert.setEnabled(False)
+        self.open.setEnabled(False)
+        for i in Listz:
             file_locn=i
             file = mpe.VideoFileClip(file_locn)
             file.audio.write_audiofile(file_locn + ".mp3")
-        self.listWidget.addItem("Done")
+            self.listWidget.addItem(">>> Done->"+str(file_locn)+".mp3")
+        Listz.clear()
+        self.convert.setText("Convert")
+        self.convert.setEnabled(True)
+        self.open.setEnabled(True)
+        
 
 if __name__ == "__main__":
     import sys
