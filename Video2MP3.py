@@ -17,8 +17,10 @@ try:
 except:
     os.system('pip install moviepy')
     os.system('pip install PyQt5')
+    os.system('pip install threaded')
 finally:
     import moviepy.editor as mpe
+    from threading import Thread
     from PyQt5 import QtCore, QtGui, QtWidgets
     from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
     from PyQt5.QtGui import QIcon
